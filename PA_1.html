@@ -66,28 +66,21 @@ img {
 
 <p>It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.</p>
 <p>This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.</p>
-<div id="data" class="section level1">
-<h1>Data</h1>
+<hr />
+<div id="data" class="section level2">
+<h2>Data</h2>
 <p>The data for this assignment can be downloaded from the course web site and then imported in to R</p>
 </div>
-<div id="loading-and-preprocessing-the-data" class="section level1">
-<h1>Loading and preprocessing the data</h1>
-<p>We first read the date once in the working directory</p>
+<div id="loading-and-preprocessing-the-data" class="section level2">
+<h2>Loading and preprocessing the data</h2>
+<p>We first read the date, once in the working directory</p>
 <pre class="r"><code>activity &lt;- read.csv(&quot;./activity.csv&quot;)</code></pre>
-<p>We can then transform the date column in an actual date format by</p>
+<p>We can then transform the date column into an actual date format by</p>
 <pre class="r"><code>activity$date&lt;- as.Date(activity$date, &quot;%Y-%m-%d&quot;)</code></pre>
 </div>
-<div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level1">
-<h1>What is mean total number of steps taken per day?</h1>
+<div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
+<h2>What is mean total number of steps taken per day?</h2>
 <p>We sum steps for each day</p>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>ac_steps&lt;-summarise(group_by(activity, date), s=sum(steps))
 qplot(ac_steps$s, geom=&quot;histogram&quot;, fill=I(&quot;blue&quot;), col=I(&quot;black&quot;), xlab = &quot;Number of steps per day&quot;)</code></pre>
 <pre><code>## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.</code></pre>
@@ -97,9 +90,10 @@ qplot(ac_steps$s, geom=&quot;histogram&quot;, fill=I(&quot;blue&quot;), col=I(&q
 <pre><code>## [1] 10766.19</code></pre>
 <pre class="r"><code>median(ac_steps$s, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 10765</code></pre>
+<hr />
 </div>
-<div id="what-is-the-average-daily-activity-pattern" class="section level1">
-<h1>What is the average daily activity pattern?</h1>
+<div id="what-is-the-average-daily-activity-pattern" class="section level2">
+<h2>What is the average daily activity pattern?</h2>
 <p>To make a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)</p>
 <pre class="r"><code>ac_5min&lt;-summarise(group_by(activity, interval), s=sum(steps, na.rm = TRUE))
 qplot(ac_5min$interval, ac_5min$s, geom=&quot;line&quot;, xlab = &quot;5 min intervals&quot;, ylab=&quot;Number of steps / interval&quot;, main = &quot;Steps by 5-min intervals&quot;)</code></pre>
@@ -111,9 +105,10 @@ qplot(ac_5min$interval, ac_5min$s, geom=&quot;line&quot;, xlab = &quot;5 min int
 ##   interval     s
 ##      (int) (int)
 ## 1      835 10927</code></pre>
+<hr />
 </div>
-<div id="imputing-missing-values" class="section level1">
-<h1>Imputing missing values</h1>
+<div id="imputing-missing-values" class="section level2">
+<h2>Imputing missing values</h2>
 <p>Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs):</p>
 <pre class="r"><code>sum(is.na(activity$steps))</code></pre>
 <pre><code>## [1] 2304</code></pre>
@@ -134,10 +129,7 @@ qplot(ac_steps$s, geom=&quot;histogram&quot;, fill=I(&quot;blue&quot;), col=I(&q
 <pre><code>## [1] 10766.19</code></pre>
 <pre class="r"><code>median(ac_steps$s, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 10766.19</code></pre>
-<p>As we expected, since we add the mean for each interval to the missing values, the total mean of steps taker per day does not change.</p>
-</div>
-<div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level1">
-<h1>Are there differences in activity patterns between weekdays and weekends?</h1>
+<p>As we expected, since we add the mean for each interval to the missing values, the total mean of steps taker per day does not change. *** ## Are there differences in activity patterns between weekdays and weekends?</p>
 <p>First, we need to create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</p>
 <pre class="r"><code>activity2$weekday &lt;- character(length( activity2$steps))
 for (i in 1: length( activity2$steps)){
