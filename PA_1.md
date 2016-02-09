@@ -1,9 +1,4 @@
----
-title: "PEER ASSESSMENT 1. REPRODUCIBLE RESEARCH"
-output: 
-  html_document: 
-    keep_md: yes
----
+# PEER ASSESSMENT 1. REPRODUCIBLE RESEARCH
 
 It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement -- a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
 
@@ -16,55 +11,91 @@ The data for this assignment can be downloaded from the course web site and then
 ## Loading and preprocessing the data
 
 We first read the date, once in the working directory
-```{r}
+
+```r
 activity <- read.csv("./activity.csv")
 ```
 We can then transform the date column into an actual date format by
-```{r}
+
+```r
 activity$date<- as.Date(activity$date, "%Y-%m-%d")
 ```
 
 ## What is mean total number of steps taken per day?
 
 We sum steps for each day
-```{r echo=FALSE, message=FALSE}
-library(ggplot2)
-library(dplyr)
-```
 
-```{r}
+
+
+```r
 ac_steps<-summarise(group_by(activity, date), s=sum(steps))
 qplot(ac_steps$s, geom="histogram", fill=I("blue"), col=I("black"), xlab = "Number of steps per day")
 ```
 
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![](PA_1_files/figure-html/unnamed-chunk-4-1.png)
+
 The mean and meadian of steps taken per day,
-```{r}
+
+```r
 mean(ac_steps$s, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(ac_steps$s, na.rm = TRUE)
+```
+
+```
+## [1] 10765
 ```
 ***
 ## What is the average daily activity pattern?
 
 To make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r}
+
+```r
 ac_5min<-summarise(group_by(activity, interval), s=sum(steps, na.rm = TRUE))
 qplot(ac_5min$interval, ac_5min$s, geom="line", xlab = "5 min intervals", ylab="Number of steps / interval", main = "Steps by 5-min intervals")
 ```
 
+![](PA_1_files/figure-html/unnamed-chunk-6-1.png)
+
 To figure out which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps, we can run the following code:
-```{r}
+
+```r
 ac_5min[which.max(ac_5min$s),]
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval     s
+##      (int) (int)
+## 1      835 10927
 ```
 ***
 ## Imputing missing values
 
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs):
-```{r}
+
+```r
 sum(is.na(activity$steps))
 ```
 
+```
+## [1] 2304
+```
+
 In order to fill all of the missing values in the datasetwe will use the mean use for that  5-minute interval across all dates
-```{r}
+
+```r
 activity2 <- activity
 for (i in 1:length(activity2$steps)){
     if (is.na(activity2[i,1])){
@@ -74,15 +105,34 @@ for (i in 1:length(activity2$steps)){
 ```
 
 We can make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
-```{r}
+
+```r
 ac_steps<-summarise(group_by(activity2, date), s=sum(steps))
 qplot(ac_steps$s, geom="histogram", fill=I("blue"), col=I("black"), xlab = "Number of steps per day")
 ```
 
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![](PA_1_files/figure-html/unnamed-chunk-10-1.png)
+
 The new mean and meadian of steps taken per day can also be calculated
-```{r}
+
+```r
 mean(ac_steps$s, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(ac_steps$s, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
 ```
 
 As we expected, since we add the mean for each interval to the missing values, the total mean of steps taker per day does not change. 
@@ -91,7 +141,8 @@ As we expected, since we add the mean for each interval to the missing values, t
 
 First, we need to create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 activity2$weekday <- character(length( activity2$steps))
 for (i in 1: length( activity2$steps)){
     day <- if (weekdays(activity2[i,2])=="Saturday"||weekdays(activity2[i,2])=="Sunday") "weekend" else "weekday"
@@ -100,9 +151,12 @@ for (i in 1: length( activity2$steps)){
 ```
 
 We can make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
-```{r}
+
+```r
 ac2_5min<-aggregate(steps ~ interval + weekday, activity2, mean)
 ac2_5min$weekday <- as.factor(ac2_5min$weekday)
 q <- ggplot(ac2_5min, aes(interval, steps))
 q + geom_line() + facet_grid(weekday~.) + labs(y = "Mean of steps per interval", title ="Weekday comparison of steps")
 ```
+
+![](PA_1_files/figure-html/unnamed-chunk-13-1.png)
